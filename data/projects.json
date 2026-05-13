@@ -1,0 +1,14 @@
+[
+  {
+    "id": "3a5fb0ef-413f-41a7-b044-85576122a46a",
+    "title": "first",
+    "description": "first demo",
+    "imageUrl": "/uploads/projects/placeholder.svg",
+    "technologies": [
+      "react"
+    ],
+    "liveUrl": "https://x.com/GajeraMira72499",
+    "createdAt": "2026-05-13T06:53:08.165Z",
+    "updatedAt": "2026-05-13T06:53:08.165Z"
+  }
+]

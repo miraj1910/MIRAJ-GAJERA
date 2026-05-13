@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-label="Project thumbnail placeholder">
+  <rect width="960" height="540" fill="#0b0d0c"/>
+  <rect x="1" y="1" width="958" height="538" fill="none" stroke="#2a2c2e" stroke-width="2"/>
+  <path d="M128 396h704M128 144h704M128 144v252M832 144v252" stroke="#00ff57" stroke-opacity=".28" stroke-width="2"/>
+  <text x="480" y="284" fill="#7d8490" font-family="monospace" font-size="28" text-anchor="middle">PROJECT_THUMBNAIL</text>
+</svg>
