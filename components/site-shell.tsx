@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { usePathname } from "next/navigation";
-import { Footer, Header } from "@/components/portfolio";
+import { Header } from "@/components/portfolio";
 
 const pageVariants = {
   initial: {
@@ -36,12 +36,11 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
           animate="animate"
           exit="exit"
           transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
-          className="min-h-[calc(100vh-118px)]"
+          className="min-h-screen"
         >
           {children}
         </motion.main>
       </AnimatePresence>
-      <Footer />
     </>
   );
 }

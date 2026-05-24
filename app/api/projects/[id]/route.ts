@@ -2,10 +2,8 @@ import { NextResponse } from "next/server";
 import { isAdminRequest } from "@/lib/auth";
 import {
   deleteProject,
-  projectInputFromForm,
-  saveUploadedImages,
-  updateProject,
-  validateProjectInput
+  projectInputFromRequest,
+  updateProject
 } from "@/lib/projects";
 
 export const runtime = "nodejs";
@@ -18,10 +16,7 @@ export async function PUT(
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
   }
 
-  const formData = await request.formData();
-  const images = await saveUploadedImages(formData.getAll("images") as File[]);
-  const input = projectInputFromForm(formData, images);
-  const errors = validateProjectInput(input);
+  const { input, errors } = await projectInputFromRequest(request);
 
   if (Object.keys(errors).length > 0) {
     return NextResponse.json({ errors }, { status: 400 });

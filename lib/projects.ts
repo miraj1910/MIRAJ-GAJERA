@@ -7,6 +7,7 @@ const dataDir = path.join(process.cwd(), "data");
 const dataFile = path.join(dataDir, "projects.json");
 const uploadDir = path.join(process.cwd(), "public", "uploads", "projects");
 const allowedImageTypes = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
+const placeholderImage = "/uploads/projects/placeholder.svg";
 
 async function ensureStorage() {
   await fs.mkdir(dataDir, { recursive: true });
@@ -39,7 +40,7 @@ async function writeProjects(projects: Project[]) {
   await fs.writeFile(dataFile, JSON.stringify(projects, null, 2), "utf8");
 }
 
-export function validateProjectInput(input: ProjectInput) {
+function validateProjectInput(input: ProjectInput) {
   const errors: Record<string, string> = {};
 
   if (!input.title.trim()) errors.title = "Title is required.";
@@ -57,9 +58,20 @@ export function validateProjectInput(input: ProjectInput) {
   return errors;
 }
 
-export async function saveUploadedImages(files: File[]): Promise<string[]> {
+async function saveUploadedImages(files: File[]): Promise<string[]> {
   const uploads = await Promise.all(files.map((file) => saveUploadedImage(file)));
   return uploads.filter(Boolean) as string[];
+}
+
+export async function projectInputFromRequest(request: Request) {
+  const formData = await request.formData();
+  const images = await saveUploadedImages(formData.getAll("images") as File[]);
+  const input = projectInputFromForm(formData, images);
+
+  return {
+    input,
+    errors: validateProjectInput(input)
+  };
 }
 
 async function saveUploadedImage(file: File | null): Promise<string | undefined> {
@@ -87,7 +99,7 @@ export async function createProject(input: ProjectInput): Promise<Project> {
     title: input.title,
     shortDescription: input.shortDescription,
     fullDescription: input.fullDescription,
-    images: input.images?.length ? input.images : ["/uploads/projects/placeholder.svg"],
+    images: input.images?.length ? input.images : [placeholderImage],
     techStack: input.techStack,
     features: input.features,
     liveUrl: input.liveUrl,
@@ -136,7 +148,7 @@ export async function deleteProject(id: string): Promise<boolean> {
   return true;
 }
 
-export function projectInputFromForm(formData: FormData, images?: string[]): ProjectInput {
+function projectInputFromForm(formData: FormData, images?: string[]): ProjectInput {
   const techStack = String(formData.get("techStack") || "")
     .split(",")
     .map((item) => item.trim())
@@ -198,11 +210,16 @@ function uniqueSlug(slug: string, projects: Project[]) {
   return candidate;
 }
 
-function normalizeProject(project: any): Project {
+function normalizeProject(value: unknown): Project {
+  const project = toRecord(value);
   const title = String(project.title || "Untitled Project");
-  const firstImage = project.imageUrl || project.images?.[0] || "/uploads/projects/placeholder.svg";
-  const createdAt = project.createdAt || new Date().toISOString();
+  const legacyImage = typeof project.imageUrl === "string" ? project.imageUrl : undefined;
+  const images = toStringArray(project.images);
+  const firstImage = legacyImage || images[0] || placeholderImage;
+  const createdAt = String(project.createdAt || new Date().toISOString());
   const updatedAt = project.updatedAt || createdAt;
+  const techStack = toStringArray(project.techStack);
+  const legacyTechnologies = toStringArray(project.technologies);
 
   return {
     id: String(project.id || crypto.randomUUID()),
@@ -210,12 +227,20 @@ function normalizeProject(project: any): Project {
     title,
     shortDescription: String(project.shortDescription || project.description || ""),
     fullDescription: String(project.fullDescription || project.description || ""),
-    images: Array.isArray(project.images) && project.images.length ? project.images : [firstImage],
-    techStack: Array.isArray(project.techStack) ? project.techStack : project.technologies || [],
-    features: Array.isArray(project.features) ? project.features : [],
+    images: images.length ? images : [firstImage],
+    techStack: techStack.length ? techStack : legacyTechnologies,
+    features: toStringArray(project.features),
     liveUrl: String(project.liveUrl || ""),
-    githubUrl: project.githubUrl || undefined,
+    githubUrl: typeof project.githubUrl === "string" ? project.githubUrl : undefined,
     createdAt,
-    updatedAt
+    updatedAt: String(updatedAt)
   };
+}
+
+function toRecord(value: unknown): Record<string, unknown> {
+  return value && typeof value === "object" ? (value as Record<string, unknown>) : {};
+}
+
+function toStringArray(value: unknown): string[] {
+  return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
 }

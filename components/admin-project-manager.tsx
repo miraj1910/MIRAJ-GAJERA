@@ -17,6 +17,14 @@ type FormState = {
   githubUrl: string;
 };
 
+type ProjectFieldConfig = {
+  field: keyof FormState;
+  label: string;
+  placeholder?: string;
+  required?: boolean;
+  input: typeof AdminInput | typeof AdminTextarea;
+};
+
 const emptyForm: FormState = {
   slug: "",
   title: "",
@@ -27,6 +35,45 @@ const emptyForm: FormState = {
   liveUrl: "",
   githubUrl: ""
 };
+
+const projectFields: ProjectFieldConfig[] = [
+  { field: "title", label: "Title", input: AdminInput },
+  {
+    field: "slug",
+    label: "Slug",
+    placeholder: "portfolio-website",
+    required: false,
+    input: AdminInput
+  },
+  { field: "shortDescription", label: "Short Description", input: AdminTextarea },
+  { field: "fullDescription", label: "Full Description", input: AdminTextarea },
+  {
+    field: "techStack",
+    label: "Tech Stack",
+    placeholder: "React, Next.js, RTOS",
+    input: AdminInput
+  },
+  {
+    field: "features",
+    label: "Features",
+    placeholder: "One feature per line",
+    required: false,
+    input: AdminTextarea
+  },
+  {
+    field: "liveUrl",
+    label: "Live URL",
+    placeholder: "https://example.com",
+    input: AdminInput
+  },
+  {
+    field: "githubUrl",
+    label: "GitHub URL",
+    placeholder: "https://github.com/...",
+    required: false,
+    input: AdminInput
+  }
+];
 
 export function AdminProjectManager({
   initialProjects
@@ -156,14 +203,14 @@ export function AdminProjectManager({
             {isEditing ? "EDIT_PROJECT" : "ADD_PROJECT"}
           </h2>
           <div className="mt-6 grid gap-4">
-            <AdminInput label="Title" value={form.title} onChange={(value) => updateField("title", value)} />
-            <AdminInput label="Slug" value={form.slug} onChange={(value) => updateField("slug", value)} placeholder="portfolio-website" required={false} />
-            <AdminTextarea label="Short Description" value={form.shortDescription} onChange={(value) => updateField("shortDescription", value)} />
-            <AdminTextarea label="Full Description" value={form.fullDescription} onChange={(value) => updateField("fullDescription", value)} />
-            <AdminInput label="Tech Stack" value={form.techStack} onChange={(value) => updateField("techStack", value)} placeholder="React, Next.js, RTOS" />
-            <AdminTextarea label="Features" value={form.features} onChange={(value) => updateField("features", value)} required={false} placeholder="One feature per line" />
-            <AdminInput label="Live URL" value={form.liveUrl} onChange={(value) => updateField("liveUrl", value)} placeholder="https://example.com" />
-            <AdminInput label="GitHub URL" value={form.githubUrl} onChange={(value) => updateField("githubUrl", value)} placeholder="https://github.com/..." required={false} />
+            {projectFields.map(({ field, input: Field, ...fieldProps }) => (
+              <Field
+                key={field}
+                {...fieldProps}
+                value={form[field] || ""}
+                onChange={(value) => updateField(field, value)}
+              />
+            ))}
             <label className="block">
               <span className="font-mono text-xs uppercase tracking-[0.2em] text-shell-muted">
                 Project Images

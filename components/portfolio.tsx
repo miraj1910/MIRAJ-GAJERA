@@ -7,11 +7,9 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import type { Project } from "@/lib/project-types";
 import {
-  Cpu,
   Github,
   Linkedin,
   Send,
-  Terminal,
   Twitter
 } from "lucide-react";
 
@@ -53,8 +51,7 @@ const status = [
 ];
 
 const contactEmail = "mirajgajera1910@gmail.com";
-const gmailComposeUrl =
-  "https://mail.google.com/mail/?view=cm&fs=1&to=mirajgajera1910@gmail.com";
+const gmailComposeUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${contactEmail}`;
 
 function SectionTitle({
   icon,
@@ -67,9 +64,9 @@ function SectionTitle({
 }) {
   return (
     <div className="flex items-center gap-6">
-      <div className="flex shrink-0 items-center gap-3 font-mono text-[20px] uppercase tracking-[0.28em] text-shell-green sm:text-[22px]">
+      <div className="flex min-w-0 shrink items-center gap-3 font-mono text-[16px] uppercase tracking-[0.18em] text-shell-green sm:text-[22px] sm:tracking-[0.28em]">
         {icon}
-        <span>{label}</span>
+        <span className="break-words">{label}</span>
       </div>
       {line ? <div className="h-px flex-1 bg-white/[0.12]" /> : null}
     </div>
@@ -91,14 +88,14 @@ export function Header() {
               aria-label="Open profile picture"
               onClick={() => setIsLogoOpen(true)}
             >
-                <Image
-                  src="/uploads/logo.jpeg"
-                  alt="Miraj Gajera logo"
-                  fill
-                  sizes="36px"
-                  className="object-cover"
-                  priority
-                />
+              <Image
+                src="/uploads/logo.jpeg"
+                alt="Miraj Gajera logo"
+                fill
+                sizes="36px"
+                className="object-cover"
+                priority
+              />
             </button>
             <Link href="/" className="focus-ring">
               <span className="font-mono text-lg font-bold tracking-[-0.02em] text-shell-text sm:text-xl">
@@ -194,12 +191,12 @@ export function Hero() {
       >
         <motion.h1
           variants={fadeUp}
-          className="max-w-[980px] text-[clamp(2rem,5.2vw,4.72rem)] font-black leading-[0.98] tracking-normal text-shell-text"
+          className="max-w-[980px] text-[clamp(2rem,11vw,4.72rem)] font-black leading-[0.98] tracking-normal text-shell-text sm:text-[clamp(2rem,5.2vw,4.72rem)]"
         >
-          <span className="block whitespace-nowrap">
+          <span className="block sm:whitespace-nowrap">
             Designing <span className="text-shell-green">Efficient</span> Systems
           </span>
-          <span className="block whitespace-nowrap">for the Real World</span>
+          <span className="block sm:whitespace-nowrap">for the Real World</span>
         </motion.h1>
 
         <motion.p
@@ -319,24 +316,6 @@ export function SystemProfile() {
   );
 }
 
-export function ExpertiseEmptyState() {
-  return (
-    <section id="expertise" className="content-rail pt-[150px] md:pt-[128px]">
-      <SectionTitle icon={<Cpu size={21} aria-hidden="true" />} label="TECHNICAL_EXPERTISE" />
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true, margin: "-120px" }}
-        className="dashed-panel mt-[106px] flex h-[118px] items-center justify-center"
-      >
-        <p className="font-mono text-xs italic tracking-[0.1em] text-shell-muted">
-          NO_RECORDS_FOUND.
-        </p>
-      </motion.div>
-    </section>
-  );
-}
-
 export function RepositoryTabs({ projects = [] }: { projects?: Project[] }) {
   return (
     <section id="projects" className="content-rail pt-[150px] md:pt-[122px]">
@@ -408,7 +387,7 @@ export function ContactCta() {
         variants={fadeUp}
         className="terminal-border mx-auto flex min-h-[410px] max-w-[1232px] flex-col items-center justify-center bg-gradient-to-r from-shell-panel to-[#101814] px-6 text-center shadow-panel"
       >
-        <h2 className="font-mono text-[clamp(2.35rem,4vw,3.1rem)] font-black uppercase leading-tight tracking-[0.02em] text-shell-text">
+        <h2 className="break-words font-mono text-[clamp(1.65rem,8vw,3.1rem)] font-black uppercase leading-tight tracking-[0.02em] text-shell-text sm:text-[clamp(2.35rem,4vw,3.1rem)]">
           INITIATE_TRANSMISSION?
         </h2>
         <p className="mt-6 max-w-xl text-base leading-7 text-shell-muted">
@@ -419,7 +398,6 @@ export function ContactCta() {
           href={gmailComposeUrl}
           target="_blank"
           rel="noreferrer"
-          data-fallback={`mailto:${contactEmail}`}
           className="focus-ring mt-10 inline-flex h-[52px] min-w-[208px] items-center justify-center gap-2 rounded bg-shell-green px-8 font-mono text-base font-bold text-shell-black shadow-glow transition hover:brightness-110 active:scale-[0.98]"
         >
           <Send size={18} aria-hidden="true" />
@@ -427,22 +405,5 @@ export function ContactCta() {
         </a>
       </motion.div>
     </section>
-  );
-}
-
-export function Footer() {
-  return (
-    <footer className="border-t border-white/[0.12] bg-[#07070d]">
-      <div className="content-rail flex min-h-[118px] flex-col justify-center gap-5 py-7 font-mono text-[11px] uppercase tracking-[0.2em] text-shell-muted sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
-          <Terminal size={18} className="text-shell-green" aria-hidden="true" />
-          <span>CURATED_PORTFOLIO | © 2026</span>
-        </div>
-        <div className="flex flex-wrap gap-x-9 gap-y-3">
-          <span>LOCATION: ASIA_PACIFIC</span>
-          <span>STATUS: STABLE_BUILD</span>
-        </div>
-      </div>
-    </footer>
   );
 }

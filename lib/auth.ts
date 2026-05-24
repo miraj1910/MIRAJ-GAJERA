@@ -5,6 +5,14 @@ import { NextResponse } from "next/server";
 const cookieName = "miraj_admin_session";
 const oneDay = 60 * 60 * 24;
 
+export function getAdminConfigError() {
+  if (!process.env.ADMIN_PASSWORD) return "ADMIN_PASSWORD is not configured.";
+  if (!process.env.ADMIN_SESSION_SECRET) {
+    return "ADMIN_SESSION_SECRET is not configured.";
+  }
+  return null;
+}
+
 function secret() {
   if (process.env.ADMIN_SESSION_SECRET) return process.env.ADMIN_SESSION_SECRET;
   if (process.env.NODE_ENV !== "production") return "local-development-session-secret";
@@ -28,6 +36,8 @@ export function createSessionCookie() {
 
 export function isValidSession(session?: string) {
   if (!session) return false;
+  if (process.env.NODE_ENV === "production" && getAdminConfigError()) return false;
+
   const parts = session.split(".");
   if (parts.length !== 3) return false;
 
@@ -44,6 +54,8 @@ export function isAdminRequest() {
 }
 
 export function verifyPassword(password: string) {
+  if (process.env.NODE_ENV === "production" && getAdminConfigError()) return false;
+
   const expected = Buffer.from(adminPassword());
   const actual = Buffer.from(password);
   return expected.length === actual.length && crypto.timingSafeEqual(actual, expected);
